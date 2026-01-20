@@ -13,8 +13,6 @@ class IPackageStockpile {
         virtual bool empty() const = 0;
         virtual void push(Package&& package) = 0;
 
-        virtual std::list<Package>::iterator begin() = 0;
-        virtual std::list<Package>::iterator end() = 0;
         virtual std::list<Package>::const_iterator cbegin() const = 0;
         virtual std::list<Package>::const_iterator cend() const = 0;
 
@@ -26,7 +24,8 @@ class IPackageQueue : public IPackageStockpile {
         virtual PackageQueueType get_queue_type() const = 0;
 };
 
-class PackageQueue{
+class PackageQueue : public IPackageQueue {
+
     public:
         PackageQueue(PackageQueueType type_given) {this->type = type_given;}
 
@@ -41,14 +40,12 @@ class PackageQueue{
 
         void push(Package&& package) {data.push_back(std::move(package)); }
         Package pop();
-        PackageQueueType get_queue_type() { return type; }
-        size_t size() { return data.size(); }
-        bool empty() { return data.empty(); }
+        PackageQueueType get_queue_type() const override { return type; }
+        size_t size() const override { return data.size(); }
+        bool empty() const override { return data.empty(); }
 
-        std::list<Package>::const_iterator cbegin() const { return data.cbegin(); }
-        std::list<Package>::const_iterator cend() const { return data.cend(); }
-        std::list<Package>::iterator begin() { return data.begin(); }
-        std::list<Package>::iterator end() { return data.end(); }
+        std::list<Package>::const_iterator cbegin() const override { return data.cbegin(); }
+        std::list<Package>::const_iterator cend() const override { return data.cend(); }
 
 
     private:
