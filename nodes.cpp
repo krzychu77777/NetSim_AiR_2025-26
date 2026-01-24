@@ -1,3 +1,13 @@
+#include "nodes.hxx"
+
+void Ramp::deliver_goods(Time t) {
+
+}
+
+void PackageSender::send_package() {
+    // do zaimplementowania kiedy pojawi się przekazywanie paczek do sąsiadów
+}
+
 void Worker::do_work(Time t) {
     if (!current_package.has_value()) {
         if (!queue_->empty()){
