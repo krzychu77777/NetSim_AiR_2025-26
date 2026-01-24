@@ -6,6 +6,20 @@
 #include <storage_types.hxx>
 #include <optional>
 
+class IPackageReceiver {
+    public:
+        virtual ~IPackageReceiver() = default;
+        virtual ElementID get_id() const = 0;
+        virtual void receive_package(Package&& package) = 0;
+        virtual IPackageStockpile::const_iterator cbegin() const = 0;
+        virtual IPackageStockpile::const_iterator cend() const = 0;
+};
+// interfejs posiada:
+// - wirtualny destruktor
+// - metodę zwracającą id odbiorcy
+// - metodę służącą do odbierania paczek
+// - metody zwracające iteratory do składu paczek
+
 class Ramp : public PackageSender {
     public:
         Ramp(ElementID id, TimeOffset di) : PackageSender(), id_(id), di_(di) {}
@@ -55,4 +69,23 @@ class PackageSender : public ReceiverPreferences {
 // 
 // - bufor
 
+class Storehause : public IPackageReceiver {
+    public:
+        Storehause(ElementID id, std::unique_ptr<IPackageStockpile> d) : id_(id), d_(std::move(d)) {}
+        ElementID get_id() const override { return id_; }
+        void receive_package(Package&& package) override {
+            d_->push(std::move(package));
+        }
+        IPackageStockpile::const_iterator cbegin() const override { return d_->cbegin(); }
+        IPackageStockpile::const_iterator cend() const override { return d_->cend(); }
+    private:
+        ElementID id_;
+        std::unique_ptr<IPackageStockpile> d_;
+};
+
+// klasa posiada:
+// - konstruktor inicjalizujący swoje pola
+// - implementację metod interfejsu IPackageReceiver
+// - id magazynu
+// - unikalny wskaźnik do składu paczek
 #endif
