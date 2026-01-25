@@ -114,9 +114,7 @@ class Worker: public IPackageReceiver, public PackageSender{
         ElementID get_id() const override { return id_; }
         ReceiverType get_receiver_type() const override { return ReceiverType::WORKER; }
 
-        void receive_package(Package&& package) override {
-            queue_->push(std::move(package));
-        }
+        void receive_package(Package&& package) override {queue_->push(std::move(package));}
 
         IPackageStockpile cbegin() const override { return queue_->cbegin(); }
         IPackageStockpile cend() const override { return queue_->cend(); }
