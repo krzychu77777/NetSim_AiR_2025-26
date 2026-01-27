@@ -4,12 +4,13 @@
 #include "types.hxx"
 #include "package.hxx"
 #include "storage_types.hxx"
+#include "helpers.hxx"
 #include <optional>
 #include <memory>
 
 enum class ReceiverType {
     WORKER,
-    STOREHAOUSE
+    STOREHOUSE
 };
 
 class IPackageReceiver {
@@ -30,8 +31,8 @@ class Ramp : public PackageSender {
     public:
         Ramp(ElementID id, TimeOffset di) : PackageSender(), id_(id), di_(di) {}
         void deliver_goods(Time t);
-        TimeOffset get_delivery_interval() { return di_; }
-        ElementID get_id() { return id_; }
+        TimeOffset get_delivery_interval() const { return di_; }
+        ElementID get_id() const { return id_; }
 
     private:
         ElementID id_;
@@ -80,9 +81,7 @@ class Storehouse : public IPackageReceiver {
         Storehouse(ElementID id, std::unique_ptr<IPackageStockpile> d) : id_(id), d_(std::move(d)) {}
         ~Storehouse() override = default;
         ElementID get_id() const override { return id_; }
-        void receive_package(Package&& package) override {
-            d_->push(std::move(package));
-        }
+        void receive_package(Package&& package) override { d_->push(std::move(package)); }
         IPackageStockpile::const_iterator cbegin() const override { return d_->cbegin(); }
         IPackageStockpile::const_iterator cend() const override { return d_->cend(); }
     private:
@@ -135,5 +134,44 @@ class Worker: public IPackageReceiver, public PackageSender{
         std::optional<Package> current_package = std::nullopt;
 
 };
+
+class ReceiverPreferences {
+    public:
+        using preferences_t = std::map<IPackageReceiver*, double>;
+        using const_iterator = preferences_t::const_iterator;
+
+        ReceiverPreferences(ProbabilityGenerator pg) : pg_(pg) {}
+        void add_receiver(IPackageReceiver* r);
+        void remove_receiver(IPackageReceiver* r);
+        IPackageReceiver* choose_receiver();
+        const preferences_t& get_preferences() const { return preferences_; }
+        
+        const_iterator begin() const { return preferences_.begin(); }
+        const_iterator end() const { return preferences_.end(); }
+        const_iterator cbegin() const { return preferences_.cbegin(); }
+        const_iterator cend() const { return preferences_.cend(); }
+
+        preferences_t preferences_;
+        ProbabilityGenerator pg_;
+
+    private:
+        void rebuild_probabilities();
+};
+
+// klasa posiada:
+// - alias na typ kontenera użytego do przechowywania preferencji
+// - alias na iterator tego kontera "tylko do odczytu"
+// - konstruktor inicjalizujący generator prawdopodobieństwa
+// - metodę dodawania odbiorcy (przeliczającą prawdopodobieństwo)
+// - metodę usuwania odbiorcy (przeliczającą prawdopodobieństwo)
+// - metodę wybierania odbiorcy, zwracającą wskaźnik na wylosowanego odbiorcę
+// - metodę pobierania odbiorcy, zwracającą wszystkie aktualne połączenia w trybie "tylko do oczytu"
+//                               (referencję na obiekt przechowujący preferencje)
+// - iteratory dostępu do preferencji
+// 
+// - zmapowane preferencje (klucz: wskaźnik na odbiorcę, wartość: prawdopodobieństwo)
+// - obiekt generatora liczb losowych
+//
+// - metodę pomocniczą do przeliczania prawdopodobieństwa
 
 #endif

@@ -1,3 +1,6 @@
+#ifndef FACTORY.HXX
+#define FACTORY.HXX
+
 #include "nodes.hxx"
 
 class Factory {
@@ -41,3 +44,5 @@ class Factory {
 class NodeCollection {
 
 };
+
+#endif
