@@ -1,10 +1,16 @@
 #ifndef NODES_HXX
 #define NODES_HXX
 
-#include <types.hxx>
-#include <package.hxx>
-#include <storage_types.hxx>
+#include "types.hxx"
+#include "package.hxx"
+#include "storage_types.hxx"
 #include <optional>
+#include <memory>
+
+enum class ReceiverType {
+    WORKER,
+    STOREHAOUSE
+};
 
 class IPackageReceiver {
     public:
@@ -69,9 +75,10 @@ class PackageSender : public ReceiverPreferences {
 // 
 // - bufor
 
-class Storehause : public IPackageReceiver {
+class Storehouse : public IPackageReceiver {
     public:
-        Storehause(ElementID id, std::unique_ptr<IPackageStockpile> d) : id_(id), d_(std::move(d)) {}
+        Storehouse(ElementID id, std::unique_ptr<IPackageStockpile> d) : id_(id), d_(std::move(d)) {}
+        ~Storehouse() override = default;
         ElementID get_id() const override { return id_; }
         void receive_package(Package&& package) override {
             d_->push(std::move(package));
@@ -112,12 +119,12 @@ class Worker: public IPackageReceiver, public PackageSender{
         TimeOffset get_processing_duration() const {return processing_duration_; }
         Time get_package_processing_start() const;
         ElementID get_id() const override { return id_; }
-        ReceiverType get_receiver_type() const override { return ReceiverType::WORKER; }
+        ReceiverType get_receiver_type() const { return ReceiverType::WORKER; }
 
         void receive_package(Package&& package) override {queue_->push(std::move(package));}
 
-        IPackageStockpile cbegin() const override { return queue_->cbegin(); }
-        IPackageStockpile cend() const override { return queue_->cend(); }
+        IPackageStockpile::const_iterator cbegin() const override { return queue_->cbegin(); }
+        IPackageStockpile::const_iterator cend() const override { return queue_->cend(); }
 
     private:
         TimeOffset processing_duration_;
