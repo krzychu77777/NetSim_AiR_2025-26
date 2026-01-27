@@ -4,12 +4,13 @@
 #include "types.hxx"
 #include "package.hxx"
 #include "storage_types.hxx"
+#include "helpers.hxx"
 #include <optional>
 #include <memory>
 
 enum class ReceiverType {
     WORKER,
-    STOREHAOUSE
+    STOREHOUSE
 };
 
 class IPackageReceiver {
