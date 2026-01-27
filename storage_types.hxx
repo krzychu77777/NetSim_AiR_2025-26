@@ -13,8 +13,10 @@ class IPackageStockpile {
         virtual bool empty() const = 0;
         virtual void push(Package&& package) = 0;
 
-        virtual std::list<Package>::const_iterator cbegin() const = 0;
-        virtual std::list<Package>::const_iterator cend() const = 0;
+        // robię alias na ten śmieszny iterator, żeby się nie męczyć ~Krzychu
+        using const_iterator = std::list<Package>::const_iterator;
+        virtual const_iterator cbegin() const = 0;
+        virtual const_iterator cend() const = 0;
 
 };
 
