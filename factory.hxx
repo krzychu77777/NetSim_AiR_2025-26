@@ -3,6 +3,48 @@
 
 #include "nodes.hxx"
 
+template <typename Node>
+class NodeCollection {
+public:
+    using container_t = std::vector<std::unique_ptr<Node>>;
+    using iterator = typename container_t::iterator;
+    using const_iterator = typename container_t::const_iterator;
+
+    void add(Node&& node) {
+        nodes.emplace_back(std::make_unique<Node>(std::move(node)));
+    }
+
+    void remove_by_id(ElementID id) {
+        nodes.erase(
+            std::remove_if(nodes.begin(), nodes.end(),
+                [id](const std::unique_ptr<Node>& node) {
+                    return node->get_id() == id;
+                }),
+            nodes.end()
+        );
+    }
+
+    iterator find_by_id(ElementID id) {
+        return std::find_if(nodes.begin(), nodes.end(),
+            [id](const std::unique_ptr<Node>& node) {
+                return node->get_id() == id;
+            });
+    }
+
+    const_iterator find_by_id(ElementID id) const {
+        return std::find_if(nodes.cbegin(), nodes.cend(),
+            [id](const std::unique_ptr<Node>& node) {
+                return node->get_id() == id;
+            });
+    }
+
+    const_iterator cbegin() const { return nodes.cbegin(); }
+    const_iterator cend() const { return nodes.cend(); }
+
+private:
+    container_t nodes;
+};
+
 class Factory {
     public:
         Factory() = default;
@@ -45,9 +87,4 @@ class Factory {
         NodeCollection<Worker> workers_;
         NodeCollection<Storehouse> storehouses_;
 };
-
-class NodeCollection {
-
-};
-
 #endif
