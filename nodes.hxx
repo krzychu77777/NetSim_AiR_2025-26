@@ -19,7 +19,7 @@ class IPackageReceiver {
         virtual ~IPackageReceiver() = default;
         virtual ElementID get_id() const = 0;
         virtual void receive_package(Package&& package) = 0;
-
+        
         virtual IPackageStockpile::const_iterator cbegin() const = 0;
         virtual IPackageStockpile::const_iterator cend() const = 0;
         virtual IPackageStockpile::const_iterator begin() const = 0;
@@ -72,13 +72,13 @@ class ReceiverPreferences {
 // - metodę pomocniczą do przeliczania prawdopodobieństwa
 
 
-class PackageSender : public ReceiverPreferences {
+class PackageSender {
     public:
         PackageSender() = default;
         PackageSender(PackageSender&&) = default ;
         void send_package();
         std::optional<Package>& get_sending_buffer() { return buffer_; }
-
+        
         ReceiverPreferences receiver_preferences_;
     
     protected:
@@ -110,7 +110,7 @@ class Ramp : public PackageSender {
     private:
         ElementID id_;
         TimeOffset di_;
-        //Time t_; // czy to jest potrzebne?
+        Time t_; // czy to jest potrzebne?
 
 };
 
@@ -127,16 +127,17 @@ class Ramp : public PackageSender {
 
 class Storehouse : public IPackageReceiver {
     public:
-        Storehouse(ElementID id): id_(id), d_(std::make_unique<PackageQueue>(PackageQueueType::FIFO)) {}
+        Storehouse(ElementID id): id_(id),d_(std::make_unique<PackageQueue>(PackageQueueType::FIFO)) {}
         Storehouse(ElementID id, std::unique_ptr<IPackageStockpile> d) : id_(id), d_(std::move(d)) {}
         ~Storehouse() override = default;
         ElementID get_id() const override { return id_; }
         void receive_package(Package&& package) override { d_->push(std::move(package)); }
-
-        IPackageStockpile::const_iterator begin() const {return cbegin();}
-        IPackageStockpile::const_iterator end() const {return cend();}
+        
         IPackageStockpile::const_iterator cbegin() const override { return d_->cbegin(); }
         IPackageStockpile::const_iterator cend() const override { return d_->cend(); }
+        IPackageStockpile::const_iterator begin() const {return cbegin();}
+        IPackageStockpile::const_iterator end() const {return cend();}
+        
     private:
         ElementID id_;
         std::unique_ptr<IPackageStockpile> d_;
@@ -152,7 +153,7 @@ class Worker: public IPackageReceiver, public PackageSender{
 
     public: 
         Worker(ElementID id, TimeOffset pd, std::unique_ptr<IPackageQueue> q)
-    :PackageSender(), id_(id), processing_duration_(pd), queue_(std::move(q)) {}
+    :PackageSender(), processing_duration_(pd), id_(id), queue_(std::move(q)) {}
 
     // Dla potomnych:
     //  - powyżej konstruktor który wywołuje też konstruktor odpowiedniej instancji PackageSender
@@ -189,44 +190,5 @@ class Worker: public IPackageReceiver, public PackageSender{
         std::optional<Package> current_package = std::nullopt;
 
 };
-
-class ReceiverPreferences {
-    public:
-        using preferences_t = std::map<IPackageReceiver*, double>;
-        using const_iterator = preferences_t::const_iterator;
-
-        ReceiverPreferences(ProbabilityGenerator pg) : pg_(pg) {}
-        void add_receiver(IPackageReceiver* r);
-        void remove_receiver(IPackageReceiver* r);
-        IPackageReceiver* choose_receiver();
-        const preferences_t& get_preferences() const { return preferences_; }
-        
-        const_iterator begin() const { return preferences_.begin(); }
-        const_iterator end() const { return preferences_.end(); }
-        const_iterator cbegin() const { return preferences_.cbegin(); }
-        const_iterator cend() const { return preferences_.cend(); }
-
-        preferences_t preferences_;
-        ProbabilityGenerator pg_;
-
-    private:
-        void rebuild_probabilities();
-};
-
-// klasa posiada:
-// - alias na typ kontenera użytego do przechowywania preferencji
-// - alias na iterator tego kontera "tylko do odczytu"
-// - konstruktor inicjalizujący generator prawdopodobieństwa
-// - metodę dodawania odbiorcy (przeliczającą prawdopodobieństwo)
-// - metodę usuwania odbiorcy (przeliczającą prawdopodobieństwo)
-// - metodę wybierania odbiorcy, zwracającą wskaźnik na wylosowanego odbiorcę
-// - metodę pobierania odbiorcy, zwracającą wszystkie aktualne połączenia w trybie "tylko do oczytu"
-//                               (referencję na obiekt przechowujący preferencje)
-// - iteratory dostępu do preferencji
-// 
-// - zmapowane preferencje (klucz: wskaźnik na odbiorcę, wartość: prawdopodobieństwo)
-// - obiekt generatora liczb losowych
-//
-// - metodę pomocniczą do przeliczania prawdopodobieństwa
 
 #endif
