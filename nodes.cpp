@@ -10,7 +10,7 @@ void Ramp::deliver_goods(Time t) {
 
 void PackageSender::send_package() {
     if (buffer_) {
-        IPackageReceiver* receiver = receiver_preferences.choose_receiver();
+        IPackageReceiver* receiver = receiver_preferences_.choose_receiver();
         if (receiver != nullptr) {
             receiver->receive_package(std::move(*buffer_));
             buffer_.reset();
@@ -25,7 +25,7 @@ void Worker::do_work(Time t) {
             processing_start = t;
         }
     } else {
-        if (t - processing_start >= processing_duration_) {
+        if (t - processing_start +1 >= processing_duration_) {
             push_package(std::move(current_package.value()));
             current_package = std::nullopt;
         }
