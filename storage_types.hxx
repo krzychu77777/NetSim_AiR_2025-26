@@ -1,5 +1,5 @@
-#ifndef STORAGE_TYPES.HXX
-#define STORAGE_TYPES.HXX
+#ifndef STORAGE_TYPES_HXX
+#define STORAGE_TYPES_HXX
 
 #include "package.hxx"
 #include <list>

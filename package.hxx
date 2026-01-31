@@ -15,7 +15,7 @@ class Package {
         Package(Package&& other) noexcept;
         Package& operator=(Package&& other) noexcept;
 
-        ElementID get_id() { return id_;}
+        ElementID get_id() const { return id_;}
         ~Package();
 
     private:
