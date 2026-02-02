@@ -22,11 +22,13 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(MyExecutable
     main.cpp
+    factory.cpp
     helpers.cpp
     nodes.cpp
     package.cpp
     storage_types.cpp
     tests.cpp
+    factory.hxx
     helpers.hxx
     nodes.hxx
     package.hxx
