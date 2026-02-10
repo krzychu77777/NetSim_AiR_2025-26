@@ -73,7 +73,7 @@ class ReceiverPreferences {
 // - metodę pomocniczą do przeliczania prawdopodobieństwa
 
 
-class PackageSender : public ReceiverPreferences {
+class PackageSender {
     public:
         PackageSender() = default;
         PackageSender(PackageSender&&) = default ;
@@ -189,10 +189,12 @@ class Worker: public IPackageReceiver, public PackageSender{
         IPackageStockpile::const_iterator begin() const {return cbegin();}
         IPackageStockpile::const_iterator end() const {return cend();}
 
+        IPackageQueue* get_queue() const { return queue_.get(); }
+
     private:
+        ElementID id_;
         TimeOffset processing_duration_;
         Time processing_start = 0;
-        ElementID id_;
 
         std::unique_ptr<IPackageQueue> queue_;
         std::optional<Package> current_package = std::nullopt;
