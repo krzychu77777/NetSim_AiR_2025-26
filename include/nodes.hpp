@@ -1,10 +1,10 @@
-#ifndef NODES_HXX
-#define NODES_HXX
+#ifndef NETSIM_NODES_HPP
+#define NETSIM_NODES_HPP
 
-#include "types.hxx"
-#include "package.hxx"
-#include "storage_types.hxx"
-#include "helpers.hxx"
+#include "types.hpp"
+#include "package.hpp"
+#include "storage_types.hpp"
+#include "helpers.hpp"
 #include <optional>
 #include <memory>
 #include <map>

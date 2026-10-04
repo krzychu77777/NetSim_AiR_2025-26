@@ -1,5 +1,5 @@
-#ifndef NETSIM_TYPES_HXX
-#define NETSIM_TYPES_HXX
+#ifndef NETSIM_TYPES_HPP
+#define NETSIM_TYPES_HPP
 #include <functional>
 
 using ElementID = int;

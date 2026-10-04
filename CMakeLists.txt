@@ -1,48 +1,51 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
-project(MyProject LANGUAGES CXX)
+project(NetSim LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-
-# UWAGA: linijki 11-20 pożyczyłem z internetu - ogarniają GoogleTesta
-#                                                   ~Krzychu
 include(FetchContent)
 
-# Download GoogleTest for unit tests
+if(POLICY CMP0135)
+    cmake_policy(SET CMP0135 NEW)
+endif()
+
 FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/release-1.12.1.zip
+    googletest
+    URL https://github.com/google/googletest/archive/release-1.12.1.zip
 )
-# On MSVC this prevents overriding runtime flags; harmless elsewhere
+
+# Prevent GoogleTest from overriding the parent project's runtime library on MSVC.
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(MyExecutable
-    main.cpp
-    factory.cpp
-    helpers.cpp
-    nodes.cpp
-    package.cpp
-    storage_types.cpp
-    tests.cpp
-    factory.hxx
-    helpers.hxx
-    nodes.hxx
-    package.hxx
-    storage_types.hxx
-    types.hxx
+add_library(netsim
+    src/factory.cpp
+    src/helpers.cpp
+    src/nodes.cpp
+    src/package.cpp
+    src/storage_types.cpp
 )
 
-# UWAGA: jeszcze kilka czareodziejskich linijek do GoogleTesta:
-#                                                   ~Krzychu
-# include project headers and link tests with GoogleTest
-target_include_directories(MyExecutable PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-# Link to GTest without its provided main since project defines its own test main in main.cpp
-target_link_libraries(MyExecutable PRIVATE GTest::gtest)
+target_include_directories(netsim
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_compile_features(netsim PUBLIC cxx_std_17)
+set_target_properties(netsim PROPERTIES CXX_EXTENSIONS OFF)
+
+add_executable(netsim_tests
+    tests/main.cpp
+    tests/tests.cpp
+)
+
+target_link_libraries(netsim_tests
+    PRIVATE
+        netsim
+        GTest::gtest
+)
 
 enable_testing()
 include(GoogleTest)
-gtest_discover_tests(MyExecutable)
+gtest_discover_tests(netsim_tests)

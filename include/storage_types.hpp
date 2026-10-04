@@ -1,7 +1,7 @@
-#ifndef STORAGE_TYPES_HXX
-#define STORAGE_TYPES_HXX
+#ifndef NETSIM_STORAGE_TYPES_HPP
+#define NETSIM_STORAGE_TYPES_HPP
 
-#include "package.hxx"
+#include "package.hpp"
 #include <list>
 
 enum class PackageQueueType {

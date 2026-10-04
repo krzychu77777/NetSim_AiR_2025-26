@@ -1,7 +1,7 @@
-#ifndef PACKAGE_HXX
-#define PACKAGE_HXX
+#ifndef NETSIM_PACKAGE_HPP
+#define NETSIM_PACKAGE_HPP
 
-#include "types.hxx"
+#include "types.hpp"
 #include <set>
 #include <algorithm>
 

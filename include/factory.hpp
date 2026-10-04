@@ -1,7 +1,7 @@
-#ifndef FACTORY_HXX
-#define FACTORY_HXX
+#ifndef NETSIM_FACTORY_HPP
+#define NETSIM_FACTORY_HPP
 
-#include "nodes.hxx"
+#include "nodes.hpp"
 #include <stdexcept>
 #include <map>
 #include <vector>

@@ -1,4 +1,4 @@
-#include "nodes.hxx"
+#include "nodes.hpp"
 
 // jeszcze do przemyślenia:
 void Ramp::deliver_goods(Time t) {
