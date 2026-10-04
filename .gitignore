@@ -1,38 +1,54 @@
-# Dodatki, żeby build nie wrzucał śmieci:
+# Build directories
 build/
+build-*/
+cmake-build-*/
+out/
+
+# CMake-generated files
 CMakeFiles/
 CMakeCache.txt
-.vscode/
+cmake_install.cmake
+CTestTestfile.cmake
+compile_commands.json
+Testing/
+_deps/
 
-# Prerequisites
+# IDEs and editors
+.vscode/
+.idea/
+.vs/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Compiler-generated dependency files
 *.d
 
-# Compiled Object files
+# Compiled object files
 *.slo
 *.lo
 *.o
 *.obj
 
-# Precompiled Headers
+# Precompiled headers
 *.gch
 *.pch
 
 # Linker files
 *.ilk
 
-# Debugger Files
+# Debugger files
 *.pdb
+*.dwo
 
-# Compiled Dynamic libraries
+# Compiled dynamic libraries
 *.so
 *.dylib
 *.dll
 
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
+# Compiled static libraries
 *.lai
 *.la
 *.a
@@ -43,5 +59,6 @@ CMakeCache.txt
 *.out
 *.app
 
-# debug information files
-*.dwo
+# Fortran module files
+*.mod
+*.smod
